@@ -16,23 +16,44 @@ endpoint = aiplatform.Endpoint(
 )
 
 st.title("Deepfake Video Classifier")
-# File uploader for video files
-video_file = st.file_uploader(
-    "Upload a video to check if it's genuine or deepfake", type=["mp4", "mov", "avi"]
+# Allow user to upload a file or select from pre-existing videos
+video_option = st.selectbox(
+    "Choose an option", ["Upload a video", "Select from sample videos"]
 )
 
-if video_file is not None:
+if video_option == "Upload a video":
+    # File uploader for video files
+    video_file = st.file_uploader(
+        "Upload a video to check if it's genuine or deepfake",
+        type=["mp4", "mov", "avi"],
+    )
+
+elif video_option == "Select from sample videos":
+    # List of sample videos
+    sample_videos = {
+        "Mr Beast Speech (REAL)": "videos/mr beast real.mp4",
+        "Mr Beast Meme (FAKE)": "videos/mr beast fake.mp4",
+    }
+    selected_video = st.selectbox("Select a sample video", list(sample_videos.keys()))
+    video_file = sample_videos[selected_video]
+
+# Check if a video file or selection is available
+if video_file:
+    if isinstance(video_file, str):
+        video_file = open(video_file, "rb")
     st.video(video_file, muted=True)
 
-    with st.spinner('Analyzing Video Clip 📽️'):
+    if st.button('Analyze'):
+        video_file.seek(0)
         video_url = bucket.upload_video(video_file)
-        print(video_url)
-        result = endpoint.predict(instances=[{"video_url": video_url}])
-        print(result)
 
-        score = result["score"]
+        with st.spinner("Analyzing the video 📽️"):
+            result = endpoint.predict(instances=[{"video_url": video_url}])
+
         # Display the result
         st.snow()
+        print(result)
+        score = result[0]['score']
         st.metric(label="Authenticity Score", value=f"{round(score*100)}%")
 
         # Interpretation based on score

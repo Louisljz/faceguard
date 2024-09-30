@@ -37,7 +37,8 @@ async def predict(request: Request, response: Response):
 
         score = model.predict(video_file_path)
         os.remove(video_file_path)
-        return {'score': round(score, 4)}
+        print("Prediction Score", score)
+        return {'predictions': [{'score': round(score, 4)}]}
     
     except Exception as e:
         response.status_code = 500
