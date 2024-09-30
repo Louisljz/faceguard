@@ -1,0 +1,7 @@
+fastapi[standard]
+scipy
+tensorflow
+imageio[ffmpeg]
+cmake
+face_recognition @ git+https://github.com/thetoby9944/face_recognition
+# Fork of face_recognition using prebuild dlib library instead
