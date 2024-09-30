@@ -52,8 +52,7 @@ if video_file:
 
         # Display the result
         st.snow()
-        print(result)
-        score = result[0]['score']
+        score = result.predictions[0]["score"]
         st.metric(label="Authenticity Score", value=f"{round(score*100)}%")
 
         # Interpretation based on score
